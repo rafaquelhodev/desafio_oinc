@@ -8,12 +8,14 @@ defmodule DesafioOinc.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      # Start the Telemetry supervisor
-      DesafioOincWeb.Telemetry,
       # Start commanded
       DesafioOinc.App,
       # Start the Ecto repository
       DesafioOinc.Repo,
+      # Blog Events
+      DesafioOinc.Blog.Supervisor,
+      # Start the Telemetry supervisor
+      DesafioOincWeb.Telemetry,
       # Start the PubSub system
       {Phoenix.PubSub, name: DesafioOinc.PubSub},
       # Start Finch
@@ -21,7 +23,7 @@ defmodule DesafioOinc.Application do
       # Start the Endpoint (http/https)
       DesafioOincWeb.Endpoint
       # Start a worker by calling: DesafioOinc.Worker.start_link(arg)
-      # {DesafioOinc.Worker, arg}
+      # {DesafioOinc.Worker, arg},
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

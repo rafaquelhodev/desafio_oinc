@@ -29,7 +29,6 @@ defmodule DesafioOinc.DataCase do
 
   setup tags do
     DesafioOinc.DataCase.setup_sandbox(tags)
-    DesafioOinc.EventStoreTestDb.reset!()
     :ok
   end
 

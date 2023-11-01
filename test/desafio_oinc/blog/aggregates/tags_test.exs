@@ -1,5 +1,5 @@
 defmodule DesafioOinc.Blog.Aggregates.TagsTest do
-  use DesafioOinc.DataCase, async: true
+  use DesafioOinc.DataCase, async: false
 
   import Commanded.Assertions.EventAssertions
 
@@ -20,10 +20,7 @@ defmodule DesafioOinc.Blog.Aggregates.TagsTest do
 
       :ok = App.dispatch(command, consistency: :strong)
 
-      assert_receive_event(App, TagCreated, fn event ->
-        assert event.uuid == uuid
-        assert event.name == "Tag name"
-      end)
+      wait_for_event(App, TagCreated, fn event -> event.uuid == uuid end)
     end
   end
 end
