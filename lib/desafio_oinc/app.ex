@@ -5,4 +5,6 @@ defmodule DesafioOinc.App do
       adapter: Commanded.EventStore.Adapters.EventStore,
       event_store: DesafioOinc.EventStore
     ]
+
+  router(DesafioOinc.Router)
 end
