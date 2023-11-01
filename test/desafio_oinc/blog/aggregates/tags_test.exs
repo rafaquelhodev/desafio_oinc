@@ -18,7 +18,7 @@ defmodule DesafioOinc.Blog.Aggregates.TagsTest do
         |> CreateTag.assign_uuid(uuid)
         |> CreateTag.add_name("Tag name")
 
-      :ok = App.dispatch(command)
+      :ok = App.dispatch(command, consistency: :strong)
 
       assert_receive_event(App, TagCreated, fn event ->
         assert event.uuid == uuid
