@@ -63,16 +63,16 @@ defmodule DesafioOinc.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
+      setup: ["deps.get", "ecto.setup", "event_store.setup", "assets.setup", "assets.build"],
       "ecto.setup": [
         "ecto.create",
         "ecto.migrate",
-        "run priv/repo/seeds.exs",
-        "event_store.setup"
+        "run priv/repo/seeds.exs"
       ],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       "event_store.setup": ["event_store.create", "event_store.init"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
+      "event_store.drop": ["event_store.drop"],
+      test: ["ecto.create --quiet", "ecto.migrate --quiet", "event_store.setup", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind default", "esbuild default"],
       "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"]

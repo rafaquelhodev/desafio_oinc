@@ -10,6 +10,8 @@ defmodule DesafioOinc.Application do
     children = [
       # Start the Telemetry supervisor
       DesafioOincWeb.Telemetry,
+      # Start commanded
+      DesafioOinc.App,
       # Start the Ecto repository
       DesafioOinc.Repo,
       # Start the PubSub system
