@@ -10,6 +10,14 @@ config :desafio_oinc, DesafioOinc.Repo,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
+# Commanded event store
+config :desafio_oinc, DesafioOinc.EventStore,
+  serializer: Commanded.Serialization.JsonSerializer,
+  username: "postgres",
+  password: "postgres",
+  database: "eventstore_desafio_oinc_dev",
+  hostname: "localhost"
+
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #
