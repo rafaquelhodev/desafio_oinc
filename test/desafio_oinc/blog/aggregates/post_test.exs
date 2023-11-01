@@ -10,6 +10,8 @@ defmodule DesafioOinc.Blog.Aggregates.PostTest do
 
   alias DesafioOinc.Blog.Commands.CreatePost
   alias DesafioOinc.Blog.Commands.AddPostTag
+  alias DesafioOinc.Blog.Commands.LikePost
+  alias DesafioOinc.Blog.Commands.DislikePost
 
   alias DesafioOinc.Blog.Events.PostCreated
   alias DesafioOinc.Blog.Events.PostTagAdded
@@ -95,6 +97,100 @@ defmodule DesafioOinc.Blog.Aggregates.PostTest do
                tags: MapSet.new([tag_01, tag_02]),
                title: "My title",
                text: "My text"
+             }
+    end
+  end
+
+  describe "LikePost command" do
+    test "increments the number of likes in a Post" do
+      post_01_uuid = Ecto.UUID.generate()
+
+      create_post_command =
+        %CreatePost{}
+        |> CreatePost.assign_uuid(post_01_uuid)
+        |> CreatePost.add_title("My title")
+        |> CreatePost.add_text("My text")
+
+      :ok = App.dispatch(create_post_command, consistency: :strong)
+
+      post_02_uuid = Ecto.UUID.generate()
+
+      create_post_command =
+        %CreatePost{}
+        |> CreatePost.assign_uuid(post_02_uuid)
+        |> CreatePost.add_title("My title")
+        |> CreatePost.add_text("My text")
+
+      :ok = App.dispatch(create_post_command, consistency: :strong)
+
+      like_post_02_command = %LikePost{} |> LikePost.assign_uuid(post_02_uuid)
+
+      :ok = App.dispatch(like_post_02_command, consistency: :strong)
+      :ok = App.dispatch(like_post_02_command, consistency: :strong)
+
+      assert Aggregate.aggregate_state(App, Post, post_02_uuid) == %Post{
+               uuid: post_02_uuid,
+               tags: MapSet.new(),
+               title: "My title",
+               text: "My text",
+               likes: 2,
+               dislikes: 0
+             }
+
+      assert Aggregate.aggregate_state(App, Post, post_01_uuid) == %Post{
+               uuid: post_01_uuid,
+               tags: MapSet.new(),
+               title: "My title",
+               text: "My text",
+               likes: 0,
+               dislikes: 0
+             }
+    end
+  end
+
+  describe "DislikePost command" do
+    test "increments the number of dislikes in a Post" do
+      post_01_uuid = Ecto.UUID.generate()
+
+      create_post_command =
+        %CreatePost{}
+        |> CreatePost.assign_uuid(post_01_uuid)
+        |> CreatePost.add_title("My title")
+        |> CreatePost.add_text("My text")
+
+      :ok = App.dispatch(create_post_command, consistency: :strong)
+
+      post_02_uuid = Ecto.UUID.generate()
+
+      create_post_command =
+        %CreatePost{}
+        |> CreatePost.assign_uuid(post_02_uuid)
+        |> CreatePost.add_title("My title")
+        |> CreatePost.add_text("My text")
+
+      :ok = App.dispatch(create_post_command, consistency: :strong)
+
+      dislike_post_02_command = %DislikePost{} |> DislikePost.assign_uuid(post_02_uuid)
+
+      :ok = App.dispatch(dislike_post_02_command, consistency: :strong)
+      :ok = App.dispatch(dislike_post_02_command, consistency: :strong)
+
+      assert Aggregate.aggregate_state(App, Post, post_02_uuid) == %Post{
+               uuid: post_02_uuid,
+               tags: MapSet.new(),
+               title: "My title",
+               text: "My text",
+               likes: 0,
+               dislikes: 2
+             }
+
+      assert Aggregate.aggregate_state(App, Post, post_01_uuid) == %Post{
+               uuid: post_01_uuid,
+               tags: MapSet.new(),
+               title: "My title",
+               text: "My text",
+               likes: 0,
+               dislikes: 0
              }
     end
   end

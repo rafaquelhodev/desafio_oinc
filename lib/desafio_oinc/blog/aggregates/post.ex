@@ -5,9 +5,13 @@ defmodule DesafioOinc.Blog.Aggregates.Post do
 
   alias DesafioOinc.Blog.Commands.CreatePost
   alias DesafioOinc.Blog.Commands.AddPostTag
+  alias DesafioOinc.Blog.Commands.LikePost
+  alias DesafioOinc.Blog.Commands.DislikePost
 
   alias DesafioOinc.Blog.Events.PostCreated
   alias DesafioOinc.Blog.Events.PostTagAdded
+  alias DesafioOinc.Blog.Events.PostLiked
+  alias DesafioOinc.Blog.Events.PostDisliked
 
   def execute(%Post{uuid: nil}, %CreatePost{} = command)
       when command.text == "" or command.title == "" do
@@ -30,11 +34,31 @@ defmodule DesafioOinc.Blog.Aggregates.Post do
     }
   end
 
+  def execute(%Post{uuid: uuid}, %LikePost{}) do
+    %PostLiked{
+      uuid: uuid
+    }
+  end
+
+  def execute(%Post{uuid: uuid}, %DislikePost{}) do
+    %PostDisliked{
+      uuid: uuid
+    }
+  end
+
   def apply(%Post{}, %PostCreated{} = event) do
     %Post{uuid: event.uuid, title: event.title, text: event.text}
   end
 
   def apply(post = %Post{tags: tags}, %PostTagAdded{} = event) do
     %Post{post | tags: MapSet.put(tags, event.added_tag_uuid)}
+  end
+
+  def apply(%Post{likes: likes} = post, %PostLiked{}) do
+    %Post{post | likes: likes + 1}
+  end
+
+  def apply(%Post{dislikes: dislikes} = post, %PostDisliked{}) do
+    %Post{post | dislikes: dislikes + 1}
   end
 end
