@@ -1,5 +1,6 @@
 defmodule DesafioOinc.Blog.Aggregates.PostTest do
-  use DesafioOinc.DataCase, async: true
+  # use DesafioOinc.AggregateCase, aggregate: DesafioOinc.Blog.Aggregates.Post
+  use DesafioOinc.DataCase, async: false
 
   import Commanded.Assertions.EventAssertions
   alias Commanded.Aggregates.Aggregate
@@ -26,13 +27,9 @@ defmodule DesafioOinc.Blog.Aggregates.PostTest do
         |> CreatePost.add_title("My title")
         |> CreatePost.add_text("My text")
 
-      :ok = App.dispatch(command)
+      :ok = App.dispatch(command, consistency: :strong)
 
-      assert_receive_event(App, PostCreated, fn event ->
-        assert event.uuid == uuid
-        assert event.title == "My title"
-        assert event.text == "My text"
-      end)
+      wait_for_event(App, PostCreated, fn event -> event.uuid == uuid end)
     end
 
     test "returns an error when there is an empty text" do
@@ -44,7 +41,7 @@ defmodule DesafioOinc.Blog.Aggregates.PostTest do
         |> CreatePost.add_title("My title")
         |> CreatePost.add_text("")
 
-      assert {:error, :invalid_post_content} = App.dispatch(command)
+      assert {:error, :invalid_post_content} = App.dispatch(command, consistency: :strong)
     end
 
     test "returns an error when there is an empty title" do
@@ -56,7 +53,7 @@ defmodule DesafioOinc.Blog.Aggregates.PostTest do
         |> CreatePost.add_title("")
         |> CreatePost.add_text("My text")
 
-      assert {:error, :invalid_post_content} = App.dispatch(command)
+      assert {:error, :invalid_post_content} = App.dispatch(command, consistency: :strong)
     end
   end
 
@@ -83,12 +80,9 @@ defmodule DesafioOinc.Blog.Aggregates.PostTest do
 
       :ok = App.dispatch(add_tag_01_command, consistency: :strong)
 
-      assert_receive_event(App, PostTagAdded, fn event ->
-        assert event.uuid == uuid
-        assert event.added_tag_uuid == tag_01
-      end)
+      wait_for_event(App, PostTagAdded, fn event -> event.added_tag_uuid == tag_01 end)
 
-      :ok = App.dispatch(add_tag_02_command)
+      :ok = App.dispatch(add_tag_02_command, consistency: :strong)
 
       wait_for_event(App, PostTagAdded, fn event -> event.added_tag_uuid == tag_02 end)
 

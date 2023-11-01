@@ -23,7 +23,9 @@ defmodule DesafioOinc.Blog.Aggregates.Post do
       uuid: command.post_uuid,
       title: command.title,
       text: command.text,
-      tags: command.tags
+      tags: command.tags,
+      likes: 0,
+      dislikes: 0
     }
   end
 
