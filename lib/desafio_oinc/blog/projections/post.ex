@@ -1,6 +1,5 @@
 defmodule DesafioOinc.Blog.Projections.Post do
   use Ecto.Schema
-  import Ecto.Changeset
 
   alias DesafioOinc.Blog.Projections.PostTag
   alias DesafioOinc.Blog.Projections.Rating

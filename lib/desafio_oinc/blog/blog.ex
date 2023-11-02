@@ -14,6 +14,10 @@ defmodule DesafioOinc.Blog do
   alias DesafioOinc.Blog.Projections.Post
   alias DesafioOinc.Blog.Projections.Comment
 
+  alias DesafioOinc.Blog.Queries.CommentsQuery
+  alias DesafioOinc.Blog.Queries.PostsQuery
+  alias DesafioOinc.Blog.Queries.TagsQuery
+
   def create_post(title, text) do
     uuid = Ecto.UUID.generate()
 
@@ -25,7 +29,7 @@ defmodule DesafioOinc.Blog do
       |> App.dispatch(consistency: :strong)
 
     case dispatch do
-      :ok -> Repo.get(Post, uuid)
+      :ok -> {:ok, Repo.get(Post, uuid)}
       error -> error
     end
   end
@@ -40,7 +44,7 @@ defmodule DesafioOinc.Blog do
       |> App.dispatch(consistency: :strong)
 
     case dispatch do
-      :ok -> Repo.get(Tag, uuid)
+      :ok -> {:ok, Repo.get(Tag, uuid)}
       error -> error
     end
   end
@@ -53,7 +57,7 @@ defmodule DesafioOinc.Blog do
       |> App.dispatch(consistency: :strong)
 
     case dispatch do
-      :ok -> Repo.get(Post, post_uuid)
+      :ok -> {:ok, Repo.get(Post, post_uuid)}
       error -> error
     end
   end
@@ -63,7 +67,7 @@ defmodule DesafioOinc.Blog do
       %LikePost{} |> LikePost.assign_uuid(post_uuid) |> App.dispatch(consistency: :strong)
 
     case dispatch do
-      :ok -> Repo.get(Post, post_uuid)
+      :ok -> {:ok, Repo.get(Post, post_uuid)}
       error -> error
     end
   end
@@ -73,7 +77,7 @@ defmodule DesafioOinc.Blog do
       %DislikePost{} |> DislikePost.assign_uuid(post_uuid) |> App.dispatch(consistency: :strong)
 
     case dispatch do
-      :ok -> Repo.get(Post, post_uuid)
+      :ok -> {:ok, Repo.get(Post, post_uuid)}
       error -> error
     end
   end
@@ -89,8 +93,38 @@ defmodule DesafioOinc.Blog do
       |> App.dispatch(consistency: :strong)
 
     case dispatch do
-      :ok -> Repo.get(Comment, uuid)
+      :ok -> {:ok, Repo.get(Comment, uuid)}
       error -> error
     end
+  end
+
+  def find_post(post_uuid) do
+    case Repo.get(Post, post_uuid) do
+      nil -> {:error, :not_found}
+      post -> {:ok, post}
+    end
+  end
+
+  def get_comments_from_post(post_uuid) do
+    post_uuid
+    |> CommentsQuery.comments_from_post()
+    |> Repo.all()
+  end
+
+  def get_post_tags(post) do
+    Repo.preload(post, :tags) |> Map.get(:tags)
+  end
+
+  def get_post_rating(post) do
+    Repo.preload(post, :rating) |> Map.get(:rating)
+  end
+
+  def get_posts(limit, page) do
+    posts = limit |> PostsQuery.get_posts(page) |> Repo.all()
+    {:ok, posts}
+  end
+
+  def get_tags() do
+    {:ok, TagsQuery.get_tags() |> Repo.all()}
   end
 end
