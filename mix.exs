@@ -91,7 +91,7 @@ defmodule DesafioOinc.MixProject do
       "ecto.reset": ["ecto.drop", "event_store.drop", "ecto.setup"],
       "event_store.setup": ["event_store.create", "event_store.init"],
       "event_store.drop": ["event_store.drop"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "event_store.setup", "test --cover"],
+      test: ["ecto.create --quiet", "ecto.migrate --quiet", "event_store.setup", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind default", "esbuild default"],
       "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"]

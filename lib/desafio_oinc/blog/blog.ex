@@ -1,4 +1,5 @@
 defmodule DesafioOinc.Blog do
+  alias DesafioOinc.Blog.Commands.UpdateTag
   alias DesafioOinc.Blog.Commands.UpdatePost
   alias DesafioOinc.Blog.Commands.AddComment
   alias DesafioOinc.App
@@ -49,6 +50,13 @@ defmodule DesafioOinc.Blog do
     end
   end
 
+  def get_tag(uuid) do
+    case Repo.get(Tag, uuid) do
+      nil -> {:error, :not_found}
+      tag -> {:ok, tag}
+    end
+  end
+
   def create_tag(name) do
     uuid = Ecto.UUID.generate()
 
@@ -56,6 +64,19 @@ defmodule DesafioOinc.Blog do
       %CreateTag{}
       |> CreateTag.add_name(name)
       |> CreateTag.assign_uuid(uuid)
+      |> App.dispatch(consistency: :strong)
+
+    case dispatch do
+      :ok -> {:ok, Repo.get(Tag, uuid)}
+      error -> error
+    end
+  end
+
+  def update_tag(uuid, name) do
+    dispatch =
+      %UpdateTag{}
+      |> UpdateTag.assign_uuid(uuid)
+      |> UpdateTag.add_name(name)
       |> App.dispatch(consistency: :strong)
 
     case dispatch do

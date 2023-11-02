@@ -41,6 +41,14 @@ defmodule DesafioOinc.Blog.BlogTest do
     end
   end
 
+  describe "update_tag/1" do
+    test "updates a Tag projection" do
+      tag = create_tag(%{name: "Old name"})
+      {:ok, tag} = Blog.update_tag(tag.uuid, "New name")
+      assert tag.name == "New name"
+    end
+  end
+
   describe "add_tag_to_post/2" do
     test "links a post to a tag" do
       {:ok, post} = Blog.create_post("title", "text")
