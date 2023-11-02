@@ -42,4 +42,26 @@ defmodule DesafioOinc.Blog.BlogTest do
       assert tags |> List.first() |> Map.get(:uuid) == tag.uuid
     end
   end
+
+  describe "like_post/1" do
+    test "should increase the number of likes in a post" do
+      post = Blog.create_post("title", "text")
+
+      Blog.like_post(post.uuid)
+      post = Blog.like_post(post.uuid)
+
+      assert post |> Repo.preload(:rating) |> Map.get(:rating) |> Map.get(:likes) == 2
+    end
+  end
+
+  describe "dislike_post/1" do
+    test "should increase the number of dislikes in a post" do
+      post = Blog.create_post("title", "text")
+
+      Blog.dislike_post(post.uuid)
+      post = Blog.dislike_post(post.uuid)
+
+      assert post |> Repo.preload(:rating) |> Map.get(:rating) |> Map.get(:dislikes) == 2
+    end
+  end
 end

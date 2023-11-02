@@ -5,6 +5,8 @@ defmodule DesafioOinc.Blog do
   alias DesafioOinc.Blog.Commands.CreateTag
   alias DesafioOinc.Blog.Commands.CreatePost
   alias DesafioOinc.Blog.Commands.AddPostTag
+  alias DesafioOinc.Blog.Commands.DislikePost
+  alias DesafioOinc.Blog.Commands.LikePost
 
   alias DesafioOinc.Blog.Projections.Tag
   alias DesafioOinc.Blog.Projections.Post
@@ -46,6 +48,26 @@ defmodule DesafioOinc.Blog do
       |> AddPostTag.assign_tag(tag_uuid)
       |> AddPostTag.assign_uuid(post_uuid)
       |> App.dispatch(consistency: :strong)
+
+    case dispatch do
+      :ok -> Repo.get(Post, post_uuid)
+      error -> error
+    end
+  end
+
+  def like_post(post_uuid) do
+    dispatch =
+      %LikePost{} |> LikePost.assign_uuid(post_uuid) |> App.dispatch(consistency: :strong)
+
+    case dispatch do
+      :ok -> Repo.get(Post, post_uuid)
+      error -> error
+    end
+  end
+
+  def dislike_post(post_uuid) do
+    dispatch =
+      %DislikePost{} |> DislikePost.assign_uuid(post_uuid) |> App.dispatch(consistency: :strong)
 
     case dispatch do
       :ok -> Repo.get(Post, post_uuid)

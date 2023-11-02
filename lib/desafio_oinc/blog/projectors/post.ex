@@ -11,6 +11,10 @@ defmodule DesafioOinc.Blog.Projectors.Post do
 
   alias DesafioOinc.Blog.Events.PostCreated
   alias DesafioOinc.Blog.Events.PostTagAdded
+  alias DesafioOinc.Blog.Events.PostDisliked
+  alias DesafioOinc.Blog.Events.PostLiked
+
+  alias DesafioOinc.Repo
 
   require Logger
 
@@ -30,9 +34,36 @@ defmodule DesafioOinc.Blog.Projectors.Post do
     })
   end)
 
+  project(%PostLiked{} = event, _metadata, fn multi ->
+    multi
+    |> Ecto.Multi.run(:post_rating, fn _repo, _changes -> get_rating(event.uuid) end)
+    |> Ecto.Multi.run(:update_post_rating, fn _repo, %{post_rating: rating} ->
+      rating
+      |> Ecto.Changeset.change(likes: event.likes)
+      |> Repo.update()
+    end)
+  end)
+
+  project(%PostDisliked{} = event, _metadata, fn multi ->
+    multi
+    |> Ecto.Multi.run(:post_rating, fn _repo, _changes -> get_rating(event.uuid) end)
+    |> Ecto.Multi.run(:update_post_rating, fn _repo, %{post_rating: rating} ->
+      rating
+      |> Ecto.Changeset.change(dislikes: event.dislikes)
+      |> Repo.update()
+    end)
+  end)
+
   def error({:error, %Ecto.ConstraintError{} = error}, _event, _failure_context) do
     Logger.error(fn -> "Failed due to constraint error: " <> inspect(error) end)
 
     :skip
+  end
+
+  defp get_rating(post_uuid) do
+    case Repo.get(Rating, post_uuid) do
+      nil -> {:error, :rating_not_found}
+      rating -> {:ok, rating}
+    end
   end
 end
