@@ -9,7 +9,8 @@ defmodule DesafioOinc.Blog.Supervisor do
     Supervisor.init(
       [
         DesafioOinc.Blog.Projectors.Post,
-        DesafioOinc.Blog.Projectors.Tag
+        DesafioOinc.Blog.Projectors.Tag,
+        DesafioOinc.Blog.Projectors.Comment
       ],
       strategy: :one_for_one
     )

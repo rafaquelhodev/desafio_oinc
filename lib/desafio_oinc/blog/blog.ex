@@ -1,7 +1,9 @@
 defmodule DesafioOinc.Blog do
+  alias DesafioOinc.Blog.Commands.AddComment
   alias DesafioOinc.App
   alias DesafioOinc.Repo
 
+  alias DesafioOinc.Blog.Commands.AddComment
   alias DesafioOinc.Blog.Commands.CreateTag
   alias DesafioOinc.Blog.Commands.CreatePost
   alias DesafioOinc.Blog.Commands.AddPostTag
@@ -10,6 +12,7 @@ defmodule DesafioOinc.Blog do
 
   alias DesafioOinc.Blog.Projections.Tag
   alias DesafioOinc.Blog.Projections.Post
+  alias DesafioOinc.Blog.Projections.Comment
 
   def create_post(title, text) do
     uuid = Ecto.UUID.generate()
@@ -71,6 +74,22 @@ defmodule DesafioOinc.Blog do
 
     case dispatch do
       :ok -> Repo.get(Post, post_uuid)
+      error -> error
+    end
+  end
+
+  def comment_post(post_uuid, comment_body) do
+    uuid = Ecto.UUID.generate()
+
+    dispatch =
+      %AddComment{}
+      |> AddComment.assign_uuid(uuid)
+      |> AddComment.assign_post(post_uuid)
+      |> AddComment.add_comment(comment_body)
+      |> App.dispatch(consistency: :strong)
+
+    case dispatch do
+      :ok -> Repo.get(Comment, uuid)
       error -> error
     end
   end

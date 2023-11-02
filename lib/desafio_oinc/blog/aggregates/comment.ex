@@ -9,17 +9,16 @@ defmodule DesafioOinc.Blog.Aggregates.Comment do
 
   alias DesafioOinc.Blog.Events.CommentCreated
 
-  def execute(%Comment{uuid: nil}, %AddComment{} = command)
-      when length(command.text) >= 254 do
-    {:error, :comment_too_big}
-  end
-
   def execute(%Comment{uuid: nil}, %AddComment{} = command) do
-    %CommentCreated{
-      uuid: command.comment_uuid,
-      post_uuid: command.post_uuid,
-      text: command.text
-    }
+    if String.length(command.text) >= 254 do
+      {:error, :comment_too_big}
+    else
+      %CommentCreated{
+        uuid: command.comment_uuid,
+        post_uuid: command.post_uuid,
+        text: command.text
+      }
+    end
   end
 
   def apply(%Comment{}, %CommentCreated{} = event) do

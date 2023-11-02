@@ -64,4 +64,15 @@ defmodule DesafioOinc.Blog.BlogTest do
       assert post |> Repo.preload(:rating) |> Map.get(:rating) |> Map.get(:dislikes) == 2
     end
   end
+
+  describe "comment_post/1" do
+    test "should comment an existing post" do
+      post = Blog.create_post("title", "text")
+
+      comment = Blog.comment_post(post.uuid, "my new comment")
+
+      assert comment.text == "my new comment"
+      assert comment.post_uuid == post.uuid
+    end
+  end
 end
