@@ -70,6 +70,28 @@ defmodule DesafioOincWeb.PostLiveTest do
       assert html =~ "Post updated successfully"
       assert html =~ "some updated text"
     end
+
+    test "adds a tag to a post", %{conn: conn, post: post} do
+      tag = Fixtures.create_tag()
+
+      {:ok, index_live, _html} = live(conn, ~p"/posts")
+
+      assert index_live
+             |> element(~s{[href="/posts/#{post.uuid}/tag"]}, "Add tag")
+             |> render_click() =~
+               "Add Tag"
+
+      assert_patch(index_live, ~p"/posts/#{post.uuid}/tag")
+
+      assert index_live
+             |> form("#post-form", post: %{new_tags: tag.uuid})
+             |> render_submit()
+
+      assert_patch(index_live, ~p"/posts")
+
+      html = render(index_live)
+      assert html =~ "Tag added successfully"
+    end
   end
 
   describe "Show" do

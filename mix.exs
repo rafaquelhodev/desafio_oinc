@@ -22,7 +22,9 @@ defmodule DesafioOinc.MixProject do
           DesafioOinc.Repo,
           DesafioOinc.DataCase,
           DesafioOincWeb.CoreComponents,
-          DesafioOinc.Fixtures
+          DesafioOinc.Fixtures,
+          DesafioOincWeb.Schema.CommentTypes,
+          DesafioOincWeb.Schema.TagTypes
         ]
       ]
     ]

@@ -20,6 +20,17 @@ defmodule DesafioOincWeb.PostLive.Index do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
+  defp apply_action(socket, :tag, %{"id" => id}) do
+    {:ok, tags} = Blog.get_tags()
+
+    {:ok, post} = Blog.find_post(id)
+
+    socket
+    |> assign(:page_title, "Add Tag")
+    |> assign(:post, post)
+    |> assign(:tags, tags)
+  end
+
   defp apply_action(socket, :edit, %{"id" => id}) do
     {:ok, post} = Blog.find_post(id)
 

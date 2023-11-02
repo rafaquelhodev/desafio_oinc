@@ -16,7 +16,22 @@
     </div>
     <.link patch={~p"/posts/#{post.uuid}/edit"}>Edit</.link>
   </:action>
+  <:action :let={{_id, post}}>
+    <.link patch={~p"/posts/#{post.uuid}/tag"}>Add tag</.link>
+  </:action>
 </.table>
+
+<.modal :if={@live_action in [:tag]} id="post-modal" show on_cancel={JS.patch(~p"/posts")}>
+  <.live_component
+    module={DesafioOincWeb.PostLive.AddTagComponent}
+    id={@post.uuid}
+    title={@page_title}
+    action={@live_action}
+    post={@post}
+    tags={@tags}
+    patch={~p"/posts"}
+  />
+</.modal>
 
 <.modal :if={@live_action in [:new, :edit]} id="post-modal" show on_cancel={JS.patch(~p"/posts")}>
   <.live_component
