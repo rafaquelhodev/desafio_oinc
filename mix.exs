@@ -21,7 +21,8 @@ defmodule DesafioOinc.MixProject do
           DesafioOincWeb.ErrorHTML,
           DesafioOinc.Repo,
           DesafioOinc.DataCase,
-          DesafioOincWeb.CoreComponents
+          DesafioOincWeb.CoreComponents,
+          DesafioOinc.Fixtures
         ]
       ]
     ]
@@ -66,7 +67,9 @@ defmodule DesafioOinc.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:commanded, "~> 1.4"},
       {:commanded_eventstore_adapter, "~> 1.4"},
-      {:commanded_ecto_projections, "~> 1.2"}
+      {:commanded_ecto_projections, "~> 1.2"},
+      {:absinthe, "~> 1.7"},
+      {:absinthe_plug, "~> 1.5"}
     ]
   end
 

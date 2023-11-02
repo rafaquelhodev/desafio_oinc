@@ -6,7 +6,7 @@ defmodule DesafioOinc.Blog.BlogTest do
 
   describe "create_post/2" do
     test "creates a post with a ratings entity" do
-      post = Blog.create_post("title", "text")
+      {:ok, post} = Blog.create_post("title", "text")
 
       assert not is_nil(post.uuid)
       assert post.title == "title"
@@ -21,7 +21,7 @@ defmodule DesafioOinc.Blog.BlogTest do
 
   describe "create_tag/1" do
     test "creates a Tag projection" do
-      tag = Blog.create_tag("Tag name")
+      {:ok, tag} = Blog.create_tag("Tag name")
 
       assert not is_nil(tag.uuid)
       assert tag.name == "Tag name"
@@ -30,11 +30,11 @@ defmodule DesafioOinc.Blog.BlogTest do
 
   describe "add_tag_to_post/2" do
     test "links a post to a tag" do
-      post = Blog.create_post("title", "text")
+      {:ok, post} = Blog.create_post("title", "text")
 
-      tag = Blog.create_tag("Tag name")
+      {:ok, tag} = Blog.create_tag("Tag name")
 
-      post = Blog.add_tag_to_post(post.uuid, tag.uuid)
+      {:ok, post} = Blog.add_tag_to_post(post.uuid, tag.uuid)
 
       tags = post |> Repo.preload(:tags) |> Map.get(:tags)
 
@@ -45,10 +45,10 @@ defmodule DesafioOinc.Blog.BlogTest do
 
   describe "like_post/1" do
     test "should increase the number of likes in a post" do
-      post = Blog.create_post("title", "text")
+      {:ok, post} = Blog.create_post("title", "text")
 
       Blog.like_post(post.uuid)
-      post = Blog.like_post(post.uuid)
+      {:ok, post} = Blog.like_post(post.uuid)
 
       assert post |> Repo.preload(:rating) |> Map.get(:rating) |> Map.get(:likes) == 2
     end
@@ -56,10 +56,10 @@ defmodule DesafioOinc.Blog.BlogTest do
 
   describe "dislike_post/1" do
     test "should increase the number of dislikes in a post" do
-      post = Blog.create_post("title", "text")
+      {:ok, post} = Blog.create_post("title", "text")
 
       Blog.dislike_post(post.uuid)
-      post = Blog.dislike_post(post.uuid)
+      {:ok, post} = Blog.dislike_post(post.uuid)
 
       assert post |> Repo.preload(:rating) |> Map.get(:rating) |> Map.get(:dislikes) == 2
     end
@@ -67,9 +67,9 @@ defmodule DesafioOinc.Blog.BlogTest do
 
   describe "comment_post/1" do
     test "should comment an existing post" do
-      post = Blog.create_post("title", "text")
+      {:ok, post} = Blog.create_post("title", "text")
 
-      comment = Blog.comment_post(post.uuid, "my new comment")
+      {:ok, comment} = Blog.comment_post(post.uuid, "my new comment")
 
       assert comment.text == "my new comment"
       assert comment.post_uuid == post.uuid
