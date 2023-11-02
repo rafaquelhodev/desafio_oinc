@@ -4,6 +4,8 @@ defmodule DesafioOinc.Blog.BlogTest do
   alias DesafioOinc.Blog
   alias DesafioOinc.Repo
 
+  import DesafioOinc.Fixtures
+
   describe "create_post/2" do
     test "creates a post with a ratings entity" do
       {:ok, post} = Blog.create_post("title", "text")
@@ -16,6 +18,17 @@ defmodule DesafioOinc.Blog.BlogTest do
 
       assert post.rating.likes == 0
       assert post.rating.dislikes == 0
+    end
+  end
+
+  describe "update_post/3" do
+    test "updates a post" do
+      post = create_post(%{text: "initial text", title: "initial title"})
+
+      assert {:ok, post} = Blog.update_post(post.uuid, "final title", "final text")
+
+      assert post.title == "final title"
+      assert post.text == "final text"
     end
   end
 

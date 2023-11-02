@@ -1,4 +1,5 @@
 defmodule DesafioOinc.Blog do
+  alias DesafioOinc.Blog.Commands.UpdatePost
   alias DesafioOinc.Blog.Commands.AddComment
   alias DesafioOinc.App
   alias DesafioOinc.Repo
@@ -26,6 +27,20 @@ defmodule DesafioOinc.Blog do
       |> CreatePost.assign_uuid(uuid)
       |> CreatePost.add_title(title)
       |> CreatePost.add_text(text)
+      |> App.dispatch(consistency: :strong)
+
+    case dispatch do
+      :ok -> {:ok, Repo.get(Post, uuid)}
+      error -> error
+    end
+  end
+
+  def update_post(uuid, title, text) do
+    dispatch =
+      %UpdatePost{}
+      |> UpdatePost.assign_uuid(uuid)
+      |> UpdatePost.add_title(title)
+      |> UpdatePost.add_text(text)
       |> App.dispatch(consistency: :strong)
 
     case dispatch do

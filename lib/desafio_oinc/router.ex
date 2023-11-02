@@ -6,6 +6,7 @@ defmodule DesafioOinc.Router do
   alias DesafioOinc.Blog.Aggregates.Comment
 
   alias DesafioOinc.Blog.Commands.CreatePost
+  alias DesafioOinc.Blog.Commands.UpdatePost
   alias DesafioOinc.Blog.Commands.AddPostTag
   alias DesafioOinc.Blog.Commands.LikePost
   alias DesafioOinc.Blog.Commands.DislikePost
@@ -13,6 +14,7 @@ defmodule DesafioOinc.Router do
   alias DesafioOinc.Blog.Commands.AddComment
 
   dispatch(CreatePost, to: Post, identity: :post_uuid)
+  dispatch(UpdatePost, to: Post, identity: :post_uuid)
   dispatch(AddPostTag, to: Post, identity: :post_uuid)
   dispatch(LikePost, to: Post, identity: :post_uuid)
   dispatch(DislikePost, to: Post, identity: :post_uuid)

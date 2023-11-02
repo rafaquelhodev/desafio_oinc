@@ -1,5 +1,6 @@
 defmodule DesafioOinc.Blog.Projections.Post do
   use Ecto.Schema
+  import Ecto.Changeset
 
   alias DesafioOinc.Blog.Projections.PostTag
   alias DesafioOinc.Blog.Projections.Rating
@@ -17,5 +18,12 @@ defmodule DesafioOinc.Blog.Projections.Post do
     has_one(:rating, Rating)
 
     timestamps()
+  end
+
+  @doc false
+  def changeset(post, attrs \\ %{}) do
+    post
+    |> cast(attrs, [:title, :text])
+    |> validate_required([:title, :text])
   end
 end

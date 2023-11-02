@@ -5,6 +5,7 @@ defmodule DesafioOinc.Blog.Projectors.Post do
     name: "Blog.Projectors.Post",
     consistency: :strong
 
+  alias DesafioOinc.Blog.Events.PostUpdated
   alias DesafioOinc.Blog.Projections.Rating
   alias DesafioOinc.Blog.Projections.Post
   alias DesafioOinc.Blog.Projections.PostTag
@@ -54,6 +55,16 @@ defmodule DesafioOinc.Blog.Projectors.Post do
     end)
   end)
 
+  project(%PostUpdated{} = event, _metadata, fn multi ->
+    multi
+    |> Ecto.Multi.run(:post, fn _repo, _changes -> get_post(event.uuid) end)
+    |> Ecto.Multi.run(:update_post, fn _repo, %{post: post} ->
+      post
+      |> Ecto.Changeset.change(text: event.text, title: event.title)
+      |> Repo.update()
+    end)
+  end)
+
   def error({:error, %Ecto.ConstraintError{} = error}, _event, _failure_context) do
     Logger.error(fn -> "Failed due to constraint error: " <> inspect(error) end)
 
@@ -64,6 +75,13 @@ defmodule DesafioOinc.Blog.Projectors.Post do
     case Repo.get(Rating, post_uuid) do
       nil -> {:error, :rating_not_found}
       rating -> {:ok, rating}
+    end
+  end
+
+  defp get_post(post_uuid) do
+    case Repo.get(Post, post_uuid) do
+      nil -> {:error, :post_not_found}
+      post -> {:ok, post}
     end
   end
 end
