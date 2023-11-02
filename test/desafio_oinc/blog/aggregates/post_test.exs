@@ -1,5 +1,4 @@
 defmodule DesafioOinc.Blog.Aggregates.PostTest do
-  # use DesafioOinc.AggregateCase, aggregate: DesafioOinc.Blog.Aggregates.Post
   use DesafioOinc.DataCase, async: false
 
   import Commanded.Assertions.EventAssertions
@@ -10,6 +9,7 @@ defmodule DesafioOinc.Blog.Aggregates.PostTest do
   alias DesafioOinc.Blog.Aggregates.Post
 
   alias DesafioOinc.Blog.Commands.CreatePost
+  alias DesafioOinc.Blog.Commands.CreateTag
   alias DesafioOinc.Blog.Commands.AddPostTag
   alias DesafioOinc.Blog.Commands.LikePost
   alias DesafioOinc.Blog.Commands.DislikePost
@@ -71,6 +71,19 @@ defmodule DesafioOinc.Blog.Aggregates.PostTest do
 
       tag_01 = Ecto.UUID.generate()
       tag_02 = Ecto.UUID.generate()
+
+      create_tag_01_command =
+        %CreateTag{}
+        |> CreateTag.assign_uuid(tag_01)
+        |> CreateTag.add_name("Tag name")
+
+      create_tag_02_command =
+        %CreateTag{}
+        |> CreateTag.assign_uuid(tag_02)
+        |> CreateTag.add_name("Tag name")
+
+      :ok = App.dispatch(create_tag_01_command, consistency: :strong)
+      :ok = App.dispatch(create_tag_02_command, consistency: :strong)
 
       add_tag_01_command =
         %AddPostTag{} |> AddPostTag.assign_uuid(uuid) |> AddPostTag.assign_tag(tag_01)

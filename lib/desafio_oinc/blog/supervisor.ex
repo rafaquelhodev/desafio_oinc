@@ -8,7 +8,8 @@ defmodule DesafioOinc.Blog.Supervisor do
   def init(_arg) do
     Supervisor.init(
       [
-        DesafioOinc.Blog.Projectors.Post
+        DesafioOinc.Blog.Projectors.Post,
+        DesafioOinc.Blog.Projectors.Tag
       ],
       strategy: :one_for_one
     )
