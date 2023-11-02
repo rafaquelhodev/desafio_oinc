@@ -9,6 +9,6 @@ defmodule DesafioOinc.Blog.Queries.PostsQuery do
     from(p in Post)
     |> limit(^limit)
     |> offset(^offset)
-    |> order_by(:inserted_at)
+    |> order_by(desc: :inserted_at)
   end
 end

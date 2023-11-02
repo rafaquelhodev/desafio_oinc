@@ -10,7 +10,7 @@ defmodule DesafioOincWeb.PostLive.FormComponent do
     <div>
       <.header>
         <%= @title %>
-        <:subtitle>Use this form to manage post records in your database.</:subtitle>
+        <:subtitle>Create/edit a post.</:subtitle>
       </.header>
 
       <.simple_form

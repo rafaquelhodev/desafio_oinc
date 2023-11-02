@@ -10,22 +10,26 @@ defmodule DesafioOincWeb.PostLive.AddTagComponent do
     <div>
       <.header>
         <%= @title %>
-        <:subtitle>Use this form to manage post records in your database.</:subtitle>
+        <:subtitle>Link a tag in your post.</:subtitle>
       </.header>
 
-      <.simple_form
-        for={@form}
-        id="post-form"
-        phx-target={@myself}
-        phx-change="validate"
-        phx-submit="save"
-      >
-        <.input field={@form[:new_tags]} type="select" options={@new_tags} label="New tag" />
+      <%= if length(@new_tags) > 0 do %>
+        <.simple_form
+          for={@form}
+          id="post-form"
+          phx-target={@myself}
+          phx-change="validate"
+          phx-submit="save"
+        >
+          <.input field={@form[:new_tags]} type="select" options={@new_tags} label="New tag" />
 
-        <:actions>
-          <.button phx-disable-with="Saving...">Save Post</.button>
-        </:actions>
-      </.simple_form>
+          <:actions>
+            <.button phx-disable-with="Saving...">Save Post</.button>
+          </:actions>
+        </.simple_form>
+      <% else %>
+        <div>All available tags were used. Please create a new one.</div>
+      <% end %>
     </div>
     """
   end
@@ -57,6 +61,8 @@ defmodule DesafioOincWeb.PostLive.AddTagComponent do
   def handle_event("save", %{"post" => %{"new_tags" => new_tag_uuid}}, socket) do
     case Blog.add_tag_to_post(socket.assigns.post.uuid, new_tag_uuid) do
       {:ok, _post} ->
+        notify_parent({:tag_added, socket.assigns.post, new_tag_uuid})
+
         {:noreply,
          socket
          |> put_flash(:info, "Tag added successfully")
@@ -73,4 +79,6 @@ defmodule DesafioOincWeb.PostLive.AddTagComponent do
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
     assign(socket, :form, to_form(changeset))
   end
+
+  defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
 end

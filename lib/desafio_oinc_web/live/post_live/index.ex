@@ -4,11 +4,16 @@ defmodule DesafioOincWeb.PostLive.Index do
   alias DesafioOinc.Blog
   alias DesafioOinc.Blog.Projections.Post
 
+  alias DesafioOinc.Repo
+
   @impl true
   def mount(_params, _session, socket) do
     {:ok, posts} = Blog.get_posts(100, 1)
 
-    posts = Enum.map(posts, fn post -> {post.uuid, post} end)
+    posts = Enum.map(posts, fn post ->
+      post = Repo.preload(post, :tags)
+      {post.uuid, post}
+    end)
 
     socket = assign(socket, :posts, posts)
 
@@ -24,6 +29,12 @@ defmodule DesafioOincWeb.PostLive.Index do
     {:ok, tags} = Blog.get_tags()
 
     {:ok, post} = Blog.find_post(id)
+    post = Repo.preload(post, :tags)
+
+    tags =
+      Enum.filter(tags, fn tag ->
+        tag not in post.tags
+      end)
 
     socket
     |> assign(:page_title, "Add Tag")
@@ -54,6 +65,9 @@ defmodule DesafioOincWeb.PostLive.Index do
   @impl true
   def handle_info({DesafioOincWeb.PostLive.FormComponent, {:saved, post}}, socket) do
     posts = Map.get(socket, :assigns) |> Map.get(:posts)
+
+    post = Map.put(post, :tags, [])
+
     {:noreply, assign(socket, :posts, posts ++ [{post.uuid, post}])}
   end
 
@@ -62,9 +76,32 @@ defmodule DesafioOincWeb.PostLive.Index do
     posts =
       Map.get(socket, :assigns)
       |> Map.get(:posts)
-      |> Enum.map(fn {uuid, _p} = p ->
+      |> Enum.map(fn {uuid, current_post} = p ->
         if uuid == post.uuid do
+          post = Map.put(post, :tags, current_post.tags)
           {uuid, post}
+        else
+          p
+        end
+      end)
+
+    {:noreply, assign(socket, :posts, posts)}
+  end
+
+  @impl true
+  def handle_info(
+        {DesafioOincWeb.PostLive.AddTagComponent, {:tag_added, post, new_tag_uuid}},
+        socket
+      ) do
+    {:ok, new_tag} = Blog.get_tag(new_tag_uuid)
+
+    posts =
+      Map.get(socket, :assigns)
+      |> Map.get(:posts)
+      |> Enum.map(fn {uuid, current_post} = p ->
+        if uuid == post.uuid do
+          tags = Map.get(current_post, :tags)
+          {uuid, %{current_post | tags: tags ++ [new_tag]}}
         else
           p
         end
