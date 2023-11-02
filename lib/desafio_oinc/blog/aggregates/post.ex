@@ -1,5 +1,10 @@
 defmodule DesafioOinc.Blog.Aggregates.Post do
-  defstruct uuid: nil, title: nil, text: nil, likes: 0, dislikes: 0, tags: MapSet.new()
+  defstruct uuid: nil,
+            title: nil,
+            text: nil,
+            likes: 0,
+            dislikes: 0,
+            tags: MapSet.new()
 
   alias DesafioOinc.Blog.Aggregates.Post
 
