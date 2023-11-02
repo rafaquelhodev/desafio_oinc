@@ -23,7 +23,6 @@ defmodule DesafioOinc.Blog.Projections.Rating do
   @doc false
   def changeset(rating, attrs) do
     rating
-    |> cast(attrs, [:likes, :dislikes])
-    |> validate_required([:likes, :dislikes])
+    |> cast(attrs, [:post_uuid, :likes, :dislikes])
   end
 end

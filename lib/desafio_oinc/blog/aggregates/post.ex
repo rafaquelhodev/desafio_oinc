@@ -1,5 +1,10 @@
 defmodule DesafioOinc.Blog.Aggregates.Post do
-  defstruct uuid: nil, title: nil, text: nil, likes: 0, dislikes: 0, tags: MapSet.new()
+  defstruct uuid: nil,
+            title: nil,
+            text: nil,
+            likes: 0,
+            dislikes: 0,
+            tags: MapSet.new()
 
   alias DesafioOinc.Blog.Aggregates.Post
 
@@ -36,15 +41,17 @@ defmodule DesafioOinc.Blog.Aggregates.Post do
     }
   end
 
-  def execute(%Post{uuid: uuid}, %LikePost{}) do
+  def execute(%Post{uuid: uuid, likes: likes}, %LikePost{}) do
     %PostLiked{
-      uuid: uuid
+      uuid: uuid,
+      likes: likes + 1
     }
   end
 
-  def execute(%Post{uuid: uuid}, %DislikePost{}) do
+  def execute(%Post{uuid: uuid, dislikes: dislikes}, %DislikePost{}) do
     %PostDisliked{
-      uuid: uuid
+      uuid: uuid,
+      dislikes: dislikes + 1
     }
   end
 
@@ -52,15 +59,15 @@ defmodule DesafioOinc.Blog.Aggregates.Post do
     %Post{uuid: event.uuid, title: event.title, text: event.text}
   end
 
-  def apply(post = %Post{tags: tags}, %PostTagAdded{} = event) do
+  def apply(%Post{tags: tags} = post, %PostTagAdded{} = event) do
     %Post{post | tags: MapSet.put(tags, event.added_tag_uuid)}
   end
 
-  def apply(%Post{likes: likes} = post, %PostLiked{}) do
-    %Post{post | likes: likes + 1}
+  def apply(%Post{} = post, %PostLiked{} = event) do
+    %Post{post | likes: event.likes}
   end
 
-  def apply(%Post{dislikes: dislikes} = post, %PostDisliked{}) do
-    %Post{post | dislikes: dislikes + 1}
+  def apply(%Post{} = post, %PostDisliked{} = event) do
+    %Post{post | dislikes: event.dislikes}
   end
 end

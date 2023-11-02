@@ -1,8 +1,18 @@
 defmodule DesafioOinc.Blog do
+  alias DesafioOinc.Blog.Commands.AddComment
   alias DesafioOinc.App
-  alias DesafioOinc.Blog.Commands.CreatePost
-  alias DesafioOinc.Blog.Projections.Post
   alias DesafioOinc.Repo
+
+  alias DesafioOinc.Blog.Commands.AddComment
+  alias DesafioOinc.Blog.Commands.CreateTag
+  alias DesafioOinc.Blog.Commands.CreatePost
+  alias DesafioOinc.Blog.Commands.AddPostTag
+  alias DesafioOinc.Blog.Commands.DislikePost
+  alias DesafioOinc.Blog.Commands.LikePost
+
+  alias DesafioOinc.Blog.Projections.Tag
+  alias DesafioOinc.Blog.Projections.Post
+  alias DesafioOinc.Blog.Projections.Comment
 
   def create_post(title, text) do
     uuid = Ecto.UUID.generate()
@@ -16,6 +26,70 @@ defmodule DesafioOinc.Blog do
 
     case dispatch do
       :ok -> Repo.get(Post, uuid)
+      error -> error
+    end
+  end
+
+  def create_tag(name) do
+    uuid = Ecto.UUID.generate()
+
+    dispatch =
+      %CreateTag{}
+      |> CreateTag.add_name(name)
+      |> CreateTag.assign_uuid(uuid)
+      |> App.dispatch(consistency: :strong)
+
+    case dispatch do
+      :ok -> Repo.get(Tag, uuid)
+      error -> error
+    end
+  end
+
+  def add_tag_to_post(post_uuid, tag_uuid) do
+    dispatch =
+      %AddPostTag{}
+      |> AddPostTag.assign_tag(tag_uuid)
+      |> AddPostTag.assign_uuid(post_uuid)
+      |> App.dispatch(consistency: :strong)
+
+    case dispatch do
+      :ok -> Repo.get(Post, post_uuid)
+      error -> error
+    end
+  end
+
+  def like_post(post_uuid) do
+    dispatch =
+      %LikePost{} |> LikePost.assign_uuid(post_uuid) |> App.dispatch(consistency: :strong)
+
+    case dispatch do
+      :ok -> Repo.get(Post, post_uuid)
+      error -> error
+    end
+  end
+
+  def dislike_post(post_uuid) do
+    dispatch =
+      %DislikePost{} |> DislikePost.assign_uuid(post_uuid) |> App.dispatch(consistency: :strong)
+
+    case dispatch do
+      :ok -> Repo.get(Post, post_uuid)
+      error -> error
+    end
+  end
+
+  def comment_post(post_uuid, comment_body) do
+    uuid = Ecto.UUID.generate()
+
+    dispatch =
+      %AddComment{}
+      |> AddComment.assign_uuid(uuid)
+      |> AddComment.assign_post(post_uuid)
+      |> AddComment.add_comment(comment_body)
+      |> App.dispatch(consistency: :strong)
+
+    case dispatch do
+      :ok -> Repo.get(Comment, uuid)
       error -> error
     end
   end

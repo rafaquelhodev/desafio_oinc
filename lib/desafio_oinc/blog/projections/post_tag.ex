@@ -27,7 +27,8 @@ defmodule DesafioOinc.Blog.Projections.PostTag do
   @doc false
   def changeset(post_tag, attrs) do
     post_tag
-    |> cast(attrs, [])
-    |> validate_required([])
+    |> cast(attrs, [:post_uuid, :tag_uuid])
+    |> validate_required([:post_uuid, :tag_uuid])
+    |> foreign_key_constraint(:post_tags, name: "post_tags_tag_uuid_fkey")
   end
 end
