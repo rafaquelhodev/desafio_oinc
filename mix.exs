@@ -9,7 +9,21 @@ defmodule DesafioOinc.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      test_coverage: [
+        ignore_modules: [
+          DesafioOinc.Application,
+          DesafioOinc.App,
+          DesafioOincWeb.Telemetry,
+          DesafioOincWeb.Router,
+          DesafioOincWeb.Layouts,
+          DesafioOincWeb.PageHTML,
+          DesafioOincWeb.ErrorHTML,
+          DesafioOinc.Repo,
+          DesafioOinc.DataCase,
+          DesafioOincWeb.CoreComponents
+        ]
+      ]
     ]
   end
 
@@ -74,7 +88,7 @@ defmodule DesafioOinc.MixProject do
       "ecto.reset": ["ecto.drop", "event_store.drop", "ecto.setup"],
       "event_store.setup": ["event_store.create", "event_store.init"],
       "event_store.drop": ["event_store.drop"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "event_store.setup", "test"],
+      test: ["ecto.create --quiet", "ecto.migrate --quiet", "event_store.setup", "test --cover"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind default", "esbuild default"],
       "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"]

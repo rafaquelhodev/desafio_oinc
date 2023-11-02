@@ -9,11 +9,4 @@ defmodule DesafioOinc.Blog.Projections.Tag do
 
     timestamps()
   end
-
-  @doc false
-  def changeset(tag, attrs) do
-    tag
-    |> cast(attrs, [:name])
-    |> validate_required([:name])
-  end
 end

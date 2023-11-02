@@ -17,11 +17,4 @@ defmodule DesafioOinc.Blog.Projections.Comment do
 
     timestamps()
   end
-
-  @doc false
-  def changeset(comment, attrs) do
-    comment
-    |> cast(attrs, [:text])
-    |> validate_required([:text])
-  end
 end

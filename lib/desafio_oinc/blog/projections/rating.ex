@@ -19,10 +19,4 @@ defmodule DesafioOinc.Blog.Projections.Rating do
 
     timestamps()
   end
-
-  @doc false
-  def changeset(rating, attrs) do
-    rating
-    |> cast(attrs, [:post_uuid, :likes, :dislikes])
-  end
 end
