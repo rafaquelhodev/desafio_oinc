@@ -1,13 +1,12 @@
 defmodule DesafioOinc.Blog.Aggregates.TagsTest do
   use DesafioOinc.DataCase, async: false
 
-  import Commanded.Assertions.EventAssertions
+  alias Commanded.Aggregates.Aggregate
 
   alias DesafioOinc.App
 
+  alias DesafioOinc.Blog.Aggregates.Tag
   alias DesafioOinc.Blog.Commands.CreateTag
-
-  alias DesafioOinc.Blog.Events.TagCreated
 
   describe "CreateTag command" do
     test "emits a TagCreated event" do
@@ -20,7 +19,10 @@ defmodule DesafioOinc.Blog.Aggregates.TagsTest do
 
       :ok = App.dispatch(command, consistency: :strong)
 
-      wait_for_event(App, TagCreated, fn event -> event.uuid == uuid end)
+      assert Aggregate.aggregate_state(App, Tag, uuid) == %Tag{
+               uuid: uuid,
+               name: "Tag name"
+             }
     end
   end
 end

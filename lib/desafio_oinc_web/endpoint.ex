@@ -1,5 +1,6 @@
 defmodule DesafioOincWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :desafio_oinc
+  use Absinthe.Phoenix.Endpoint, schema: DesafioOincWeb.Schema
 
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.

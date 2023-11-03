@@ -1,14 +1,13 @@
 defmodule DesafioOinc.Blog.Aggregates.CommentTest do
+  alias DesafioOinc.Blog.Aggregates.Comment
   use DesafioOinc.DataCase
 
-  import Commanded.Assertions.EventAssertions
+  alias Commanded.Aggregates.Aggregate
 
   alias DesafioOinc.App
 
   alias DesafioOinc.Blog.Commands.AddComment
   alias DesafioOinc.Blog.Commands.CreatePost
-
-  alias DesafioOinc.Blog.Events.CommentCreated
 
   describe "AddComment command" do
     test "emits a PostCreated event" do
@@ -32,7 +31,11 @@ defmodule DesafioOinc.Blog.Aggregates.CommentTest do
 
       :ok = App.dispatch(command, consistency: :strong)
 
-      wait_for_event(App, CommentCreated, fn event -> event.uuid == uuid end)
+      assert Aggregate.aggregate_state(App, Comment, uuid) == %Comment{
+               uuid: uuid,
+               text: "My comment",
+               post_uuid: post_uuid
+             }
     end
 
     test "should return error when comment is bigger than 254 chars" do
