@@ -76,16 +76,6 @@ defmodule DesafioOincWeb.Schema do
       config(fn args, _ ->
         {:ok, topic: "post-#{args.post_uuid}"}
       end)
-
-      trigger(:add_comment,
-        topic: fn comment ->
-          "post:#{comment.post_uuid}"
-        end
-      )
-
-      resolve(fn comment, _, _ ->
-        {:ok, comment}
-      end)
     end
   end
 end
