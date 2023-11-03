@@ -14,7 +14,11 @@ defmodule DesafioOincWeb.PostLive.Show do
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
     {:ok, post} = Blog.find_post(id)
-    post = Repo.preload(post, :comments)
+
+    post =
+      post
+      |> Repo.preload(:comments)
+      |> Repo.preload(:rating)
 
     {:noreply,
      socket

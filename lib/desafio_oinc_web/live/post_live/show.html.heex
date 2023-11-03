@@ -7,9 +7,18 @@
   </:actions>
 </.header>
 
-<div class="post_text">
+<div class="post-text">
   <%= @post.text %>
 </div>
+
+<.live_component
+  module={DesafioOincWeb.PostLive.RatingComponent}
+  id={@post.uuid}
+  comment={@comment}
+  action={@live_action}
+  post={@post}
+  patch={~p"/posts/#{@post.uuid}"}
+/>
 
 <.live_component
   module={DesafioOincWeb.PostLive.AddCommentComponent}

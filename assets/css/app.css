@@ -3,13 +3,25 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application CSS */
+.app-container {
+    width: 80vw;
+}
+
+.like-button {
+    background-color: rgb(25, 25, 128);
+}
+
+.dislike-button {
+    background-color: rgb(219, 82, 82);
+}
+
 .tag {
     background-color: rgb(194, 151, 151);
     border-radius: 2em;
     color: black;
 }
 
-.post_text {
+.post-text {
     margin-top: 2em;
     padding: 3em;
     border: 3px solid #706e70;
