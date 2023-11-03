@@ -17,14 +17,14 @@ defmodule DesafioOincWeb.PostLiveTest do
     setup [:create_post]
 
     test "lists all posts", %{conn: conn, post: post} do
-      {:ok, _index_live, html} = live(conn, ~p"/posts")
+      {:ok, _index_live, html} = live(conn, ~p"/")
 
       assert html =~ "Listing Posts"
       assert html =~ post.text
     end
 
     test "saves new post", %{conn: conn} do
-      {:ok, index_live, _html} = live(conn, ~p"/posts")
+      {:ok, index_live, _html} = live(conn, ~p"/")
 
       assert index_live |> element("a", "New Post") |> render_click() =~
                "New Post"
@@ -39,7 +39,7 @@ defmodule DesafioOincWeb.PostLiveTest do
              |> form("#post-form", post: @create_attrs)
              |> render_submit()
 
-      assert_patch(index_live, ~p"/posts")
+      assert_patch(index_live, ~p"/")
 
       html = render(index_live)
       assert html =~ "Post created successfully"
@@ -47,7 +47,7 @@ defmodule DesafioOincWeb.PostLiveTest do
     end
 
     test "updates post in listing", %{conn: conn, post: post} do
-      {:ok, index_live, _html} = live(conn, ~p"/posts")
+      {:ok, index_live, _html} = live(conn, ~p"/")
 
       assert index_live
              |> element(~s{[href="/posts/#{post.uuid}/edit"]}, "Edit")
@@ -64,7 +64,7 @@ defmodule DesafioOincWeb.PostLiveTest do
              |> form("#post-form", post: @update_attrs)
              |> render_submit()
 
-      assert_patch(index_live, ~p"/posts")
+      assert_patch(index_live, ~p"/")
 
       html = render(index_live)
       assert html =~ "Post updated successfully"
@@ -74,7 +74,7 @@ defmodule DesafioOincWeb.PostLiveTest do
     test "adds a tag to a post", %{conn: conn, post: post} do
       tag = Fixtures.create_tag()
 
-      {:ok, index_live, _html} = live(conn, ~p"/posts")
+      {:ok, index_live, _html} = live(conn, ~p"/")
 
       assert index_live
              |> element(~s{[href="/posts/#{post.uuid}/tag"]}, "Add tag")
@@ -87,7 +87,7 @@ defmodule DesafioOincWeb.PostLiveTest do
              |> form("#post-form", post: %{new_tags: tag.uuid})
              |> render_submit()
 
-      assert_patch(index_live, ~p"/posts")
+      assert_patch(index_live, ~p"/")
 
       html = render(index_live)
       assert html =~ "Tag added successfully"

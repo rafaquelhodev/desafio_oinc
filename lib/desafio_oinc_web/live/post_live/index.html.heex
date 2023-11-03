@@ -4,6 +4,9 @@
     <.link patch={~p"/posts/new"}>
       <.button>New Post</.button>
     </.link>
+    <.link patch={~p"/tags"}>
+      <.button>Manage Tags</.button>
+    </.link>
   </:actions>
 </.header>
 
@@ -28,7 +31,7 @@
   </:action>
 </.table>
 
-<.modal :if={@live_action in [:tag]} id="post-modal" show on_cancel={JS.patch(~p"/posts")}>
+<.modal :if={@live_action in [:tag]} id="post-modal" show on_cancel={JS.patch(~p"/")}>
   <.live_component
     module={DesafioOincWeb.PostLive.AddTagComponent}
     id={@post.uuid}
@@ -36,17 +39,17 @@
     action={@live_action}
     post={@post}
     tags={@tags}
-    patch={~p"/posts"}
+    patch={~p"/"}
   />
 </.modal>
 
-<.modal :if={@live_action in [:new, :edit]} id="post-modal" show on_cancel={JS.patch(~p"/posts")}>
+<.modal :if={@live_action in [:new, :edit]} id="post-modal" show on_cancel={JS.patch(~p"/")}>
   <.live_component
     module={DesafioOincWeb.PostLive.FormComponent}
     id={@post.uuid || :new}
     title={@page_title}
     action={@live_action}
     post={@post}
-    patch={~p"/posts"}
+    patch={~p"/"}
   />
 </.modal>
