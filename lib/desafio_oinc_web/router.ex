@@ -34,11 +34,13 @@ defmodule DesafioOincWeb.Router do
   end
 
   scope "/graphql" do
-    forward "/", Absinthe.Plug, schema: DesafioOincWeb.Schema
+    forward "/", Absinthe.Plug, schema: DesafioOincWeb.Schema, socket: DesafioOincWeb.UserSocket
   end
 
   if Mix.env() == :dev do
-    forward "/graphiql", Absinthe.Plug.GraphiQL, schema: DesafioOincWeb.Schema
+    forward "/graphiql", Absinthe.Plug.GraphiQL,
+      schema: DesafioOincWeb.Schema,
+      socket: DesafioOincWeb.UserSocket
   end
 
   # Other scopes may use custom stacks.

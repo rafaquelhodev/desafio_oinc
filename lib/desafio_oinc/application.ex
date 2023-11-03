@@ -21,9 +21,8 @@ defmodule DesafioOinc.Application do
       # Start Finch
       {Finch, name: DesafioOinc.Finch},
       # Start the Endpoint (http/https)
-      DesafioOincWeb.Endpoint
-      # Start a worker by calling: DesafioOinc.Worker.start_link(arg)
-      # {DesafioOinc.Worker, arg},
+      DesafioOincWeb.Endpoint,
+      {Absinthe.Subscription, DesafioOincWeb.Endpoint}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
