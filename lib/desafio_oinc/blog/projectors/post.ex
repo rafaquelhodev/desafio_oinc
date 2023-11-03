@@ -71,6 +71,12 @@ defmodule DesafioOinc.Blog.Projectors.Post do
     :skip
   end
 
+  def error(error, _event, _failure_context) do
+    Logger.error("Unknown error happened" <> inspect(error))
+
+    :skip
+  end
+
   defp get_rating(post_uuid) do
     case Repo.get(Rating, post_uuid) do
       nil -> {:error, :rating_not_found}

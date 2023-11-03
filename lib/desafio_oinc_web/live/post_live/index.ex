@@ -10,10 +10,11 @@ defmodule DesafioOincWeb.PostLive.Index do
   def mount(_params, _session, socket) do
     {:ok, posts} = Blog.get_posts(100, 1)
 
-    posts = Enum.map(posts, fn post ->
-      post = Repo.preload(post, :tags)
-      {post.uuid, post}
-    end)
+    posts =
+      Enum.map(posts, fn post ->
+        post = Repo.preload(post, :tags)
+        {post.uuid, post}
+      end)
 
     socket = assign(socket, :posts, posts)
 
@@ -68,7 +69,7 @@ defmodule DesafioOincWeb.PostLive.Index do
 
     post = Map.put(post, :tags, [])
 
-    {:noreply, assign(socket, :posts, posts ++ [{post.uuid, post}])}
+    {:noreply, assign(socket, :posts, [{post.uuid, post}] ++ posts)}
   end
 
   @impl true

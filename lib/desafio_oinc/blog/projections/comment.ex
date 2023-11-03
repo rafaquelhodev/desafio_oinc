@@ -1,5 +1,6 @@
 defmodule DesafioOinc.Blog.Projections.Comment do
   use Ecto.Schema
+  import Ecto.Changeset
 
   alias DesafioOinc.Blog.Projections.Post
 
@@ -15,5 +16,12 @@ defmodule DesafioOinc.Blog.Projections.Comment do
     )
 
     timestamps()
+  end
+
+  @doc false
+  def changeset(post, attrs \\ %{}) do
+    post
+    |> cast(attrs, [:text])
+    |> validate_required([:text])
   end
 end
