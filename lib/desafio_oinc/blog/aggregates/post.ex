@@ -6,6 +6,8 @@ defmodule DesafioOinc.Blog.Aggregates.Post do
             dislikes: 0,
             tags: MapSet.new()
 
+  alias DesafioOinc.Blog.Events.PostUpdated
+  alias DesafioOinc.Blog.Commands.UpdatePost
   alias DesafioOinc.Blog.Aggregates.Post
 
   alias DesafioOinc.Blog.Commands.CreatePost
@@ -55,6 +57,14 @@ defmodule DesafioOinc.Blog.Aggregates.Post do
     }
   end
 
+  def execute(%Post{uuid: uuid}, %UpdatePost{} = command) do
+    %PostUpdated{
+      uuid: uuid,
+      title: command.title,
+      text: command.text
+    }
+  end
+
   def apply(%Post{}, %PostCreated{} = event) do
     %Post{uuid: event.uuid, title: event.title, text: event.text}
   end
@@ -69,5 +79,9 @@ defmodule DesafioOinc.Blog.Aggregates.Post do
 
   def apply(%Post{} = post, %PostDisliked{} = event) do
     %Post{post | dislikes: event.dislikes}
+  end
+
+  def apply(%Post{} = post, %PostUpdated{} = event) do
+    %Post{post | title: event.title, text: event.text}
   end
 end

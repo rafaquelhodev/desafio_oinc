@@ -1,0 +1,91 @@
+defmodule DesafioOincWeb.TagLive.FormComponent do
+  use DesafioOincWeb, :live_component
+
+  alias DesafioOinc.Blog.Projections.Tag
+  alias DesafioOinc.Blog
+
+  @impl true
+  def render(assigns) do
+    ~H"""
+    <div>
+      <.header>
+        <%= @title %>
+        <:subtitle>Use this form to manage tag records in your database.</:subtitle>
+      </.header>
+
+      <.simple_form
+        for={@form}
+        id="tag-form"
+        phx-target={@myself}
+        phx-change="validate"
+        phx-submit="save"
+      >
+        <.input field={@form[:name]} type="text" label="Name" />
+        <:actions>
+          <.button phx-disable-with="Saving...">Save Tag</.button>
+        </:actions>
+      </.simple_form>
+    </div>
+    """
+  end
+
+  @impl true
+  def update(%{tag: tag} = assigns, socket) do
+    changeset = Tag.changeset(tag)
+
+    {:ok,
+     socket
+     |> assign(assigns)
+     |> assign_form(changeset)}
+  end
+
+  @impl true
+  def handle_event("validate", %{"tag" => tag_params}, socket) do
+    changeset =
+      socket.assigns.tag
+      |> Tag.changeset(tag_params)
+      |> Map.put(:action, :validate)
+
+    {:noreply, assign_form(socket, changeset)}
+  end
+
+  def handle_event("save", %{"tag" => tag_params}, socket) do
+    save_tag(socket, socket.assigns.action, tag_params)
+  end
+
+  defp save_tag(socket, :edit, %{"name" => name}) do
+    case Blog.update_tag(socket.assigns.tag.uuid, name) do
+      {:ok, tag} ->
+        notify_parent({:saved, tag})
+
+        {:noreply,
+         socket
+         |> put_flash(:info, "Tag updated successfully")
+         |> push_patch(to: socket.assigns.patch)}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign_form(socket, changeset)}
+    end
+  end
+
+  defp save_tag(socket, :new, %{"name" => name}) do
+    case Blog.create_tag(name) do
+      {:ok, tag} ->
+        notify_parent({:saved, tag})
+
+        {:noreply,
+         socket
+         |> put_flash(:info, "Tag created successfully")
+         |> push_patch(to: socket.assigns.patch)}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign_form(socket, changeset)}
+    end
+  end
+
+  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
+    assign(socket, :form, to_form(changeset))
+  end
+
+  defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
+end
