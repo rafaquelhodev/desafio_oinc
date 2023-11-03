@@ -25,11 +25,13 @@
     margin-top: 2em;
     padding: 3em;
     border: 3px solid #706e70;
+    border-radius: 1em;
 }
 
 .comment {
     margin-top: 3em;
     border: 1px solid blue;
+    border-radius: 1em;
     word-wrap: break-word;
     padding: 2em;
 }
