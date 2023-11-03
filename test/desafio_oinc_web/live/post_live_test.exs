@@ -126,5 +126,23 @@ defmodule DesafioOincWeb.PostLiveTest do
       assert html =~ "Post updated successfully"
       assert html =~ "some updated text"
     end
+
+    test "likes a post", %{conn: conn, post: post} do
+      {:ok, show_live, _html} = live(conn, ~p"/posts/#{post.uuid}")
+
+      show_live |> element("button", "Likes") |> render_click()
+
+      html = render(show_live)
+      assert html =~ "1 Likes"
+    end
+
+    test "dislikes a post", %{conn: conn, post: post} do
+      {:ok, show_live, _html} = live(conn, ~p"/posts/#{post.uuid}")
+
+      show_live |> element("button", "Dislikes") |> render_click()
+
+      html = render(show_live)
+      assert html =~ "1 Dislikes"
+    end
   end
 end

@@ -68,4 +68,24 @@ defmodule DesafioOincWeb.Schema do
       resolve(&Resolvers.PostResolver.dislike_post/3)
     end
   end
+
+  subscription do
+    field :comment_added, :comment do
+      arg(:post_uuid, non_null(:string))
+
+      config(fn args, _ ->
+        {:ok, topic: "post-#{args.post_uuid}"}
+      end)
+
+      trigger(:add_comment,
+        topic: fn comment ->
+          "post:#{comment.post_uuid}"
+        end
+      )
+
+      resolve(fn comment, _, _ ->
+        {:ok, comment}
+      end)
+    end
+  end
 end

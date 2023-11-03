@@ -71,7 +71,9 @@ defmodule DesafioOinc.MixProject do
       {:commanded_eventstore_adapter, "~> 1.4"},
       {:commanded_ecto_projections, "~> 1.2"},
       {:absinthe, "~> 1.7"},
-      {:absinthe_plug, "~> 1.5"}
+      {:absinthe_plug, "~> 1.5"},
+      {:absinthe_phoenix, "~> 2.0"},
+      {:phoenix_pubsub, "~> 2.0"}
     ]
   end
 

@@ -3,6 +3,7 @@ defmodule DesafioOincWeb.PostLive.Show do
 
   alias DesafioOinc.Blog
   alias DesafioOinc.Blog.Projections.Comment
+  alias DesafioOinc.Notifications
 
   alias DesafioOinc.Repo
 
@@ -14,6 +15,8 @@ defmodule DesafioOincWeb.PostLive.Show do
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
     {:ok, post} = Blog.find_post(id)
+
+    Notifications.subscribe("post-#{id}")
 
     post =
       post
@@ -41,6 +44,19 @@ defmodule DesafioOincWeb.PostLive.Show do
         socket
       ) do
     {:noreply, socket}
+  end
+
+  def handle_info({Notifications, :comment_added, comment}, socket) do
+    post = socket.assigns.post
+
+    post =
+      unless Enum.any?(post.comments, fn c -> c.uuid == comment.uuid end) do
+        Map.put(post, :comments, post.comments ++ [comment])
+      else
+        post
+      end
+
+    {:noreply, socket |> assign(:post, post)}
   end
 
   defp page_title(:show), do: "Show Post"

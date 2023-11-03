@@ -129,8 +129,12 @@ defmodule DesafioOinc.Blog do
       |> App.dispatch(consistency: :strong)
 
     case dispatch do
-      :ok -> {:ok, Repo.get(Comment, uuid)}
-      error -> error
+      :ok ->
+        resp = {:ok, Repo.get(Comment, uuid)}
+        DesafioOinc.Notifications.notify_subscribers(resp, "post-#{post_uuid}", :comment_added)
+
+      error ->
+        error
     end
   end
 

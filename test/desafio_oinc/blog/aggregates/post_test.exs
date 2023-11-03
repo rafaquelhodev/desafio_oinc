@@ -1,7 +1,6 @@
 defmodule DesafioOinc.Blog.Aggregates.PostTest do
   use DesafioOinc.DataCase, async: false
 
-  import Commanded.Assertions.EventAssertions
   alias Commanded.Aggregates.Aggregate
 
   alias DesafioOinc.App
@@ -13,9 +12,6 @@ defmodule DesafioOinc.Blog.Aggregates.PostTest do
   alias DesafioOinc.Blog.Commands.AddPostTag
   alias DesafioOinc.Blog.Commands.LikePost
   alias DesafioOinc.Blog.Commands.DislikePost
-
-  alias DesafioOinc.Blog.Events.PostCreated
-  alias DesafioOinc.Blog.Events.PostTagAdded
 
   describe "CreatePost command" do
     test "emits a PostCreated event" do
@@ -29,7 +25,12 @@ defmodule DesafioOinc.Blog.Aggregates.PostTest do
 
       :ok = App.dispatch(command, consistency: :strong)
 
-      wait_for_event(App, PostCreated, fn event -> event.uuid == uuid end)
+      assert Aggregate.aggregate_state(App, Post, uuid) == %Post{
+               uuid: uuid,
+               tags: MapSet.new(),
+               title: "My title",
+               text: "My text"
+             }
     end
 
     test "returns an error when there is an empty text" do
@@ -92,12 +93,7 @@ defmodule DesafioOinc.Blog.Aggregates.PostTest do
         %AddPostTag{} |> AddPostTag.assign_uuid(uuid) |> AddPostTag.assign_tag(tag_02)
 
       :ok = App.dispatch(add_tag_01_command, consistency: :strong)
-
-      wait_for_event(App, PostTagAdded, fn event -> event.added_tag_uuid == tag_01 end)
-
       :ok = App.dispatch(add_tag_02_command, consistency: :strong)
-
-      wait_for_event(App, PostTagAdded, fn event -> event.added_tag_uuid == tag_02 end)
 
       assert Aggregate.aggregate_state(App, Post, uuid) == %Post{
                uuid: uuid,
